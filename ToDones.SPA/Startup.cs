@@ -5,13 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ToDones.Data;
-using Microsoft.EntityFrameworkCore;
+using ToDones.Application.Abstractions;
+using ToDones.Application.Services;
+using ToDones.Data.Data;
+using ToDones.SPA.Data;
 
-namespace ToDones
+namespace ToDones.SPA
 {
     public class Startup
     {
@@ -29,13 +33,12 @@ namespace ToDones
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-
-            services.AddDbContext<SqlDbContext>(options =>
+            services.AddDbContext<ToDonesContext>(options =>
                    options.UseSqlServer(Configuration.GetConnectionString("SqlDbContext")));
 
-            services.AddScoped<IEmployeeService, EmployeeService>();
-
-            services.AddServerSideBlazor(options => options.DetailedErrors = true);
+            services.AddTransient<ITimeLogService, TimeLogService>();
+            services.AddTransient<ITaskService, TaskService>();
+            services.AddTransient<ICategoryService, CategoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,8 +51,11 @@ namespace ToDones
             else
             {
                 app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();

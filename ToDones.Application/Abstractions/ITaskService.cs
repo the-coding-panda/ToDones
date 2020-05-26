@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ToDones.Application.Abstractions
 {
-    interface ITaskService
+    public interface ITaskService
     {
         void CreateTask(int userId, string description);
         void EditTask(int taskId, string description);

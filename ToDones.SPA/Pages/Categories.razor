@@ -1,0 +1,79 @@
+﻿@page "/categories"
+@inject ICategoryService categoryService
+
+<h3>Categories</h3>
+<hr />
+
+<EditForm Model="@category" OnValidSubmit="SaveCategory">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <InputText class="form-control" @bind-Value="category.Name" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Save" />
+                <input type="submit" class="btn" value="Clear" />
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+<hr />
+<table class='table'>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Colour</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in currentCategories)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>@category.Colour</td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+
+@code {
+
+    public int UserId { get; set; }
+    public CategoryViewModel category { get; set; }
+    public List<CategoryViewModel> currentCategories { get; set; }
+
+    protected override void OnInitialized()
+    {
+        UserId = GetUserId();
+        InitCategories();
+        category = new CategoryViewModel();
+    }
+
+    private int GetUserId() { return 1; }
+
+    private void InitCategories()
+    {
+        currentCategories = categoryService.GetCategories(UserId).Select(r => new CategoryViewModel
+        {
+            Name = r.Name,
+            UserId = r.UserId
+        }).ToList();
+    }
+
+    protected void SaveCategory()
+    {
+        categoryService.AddCategory(category.Name, UserId, colour: ToDones.Data.Types.CategoryColour.Blue);
+        category = new CategoryViewModel();
+        InitCategories();
+    }
+
+}

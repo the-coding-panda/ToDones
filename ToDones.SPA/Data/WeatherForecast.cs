@@ -1,6 +1,6 @@
 using System;
 
-namespace ToDones.Data
+namespace ToDones.SPA.Data
 {
     public class WeatherForecast
     {

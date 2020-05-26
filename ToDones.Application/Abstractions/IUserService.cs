@@ -2,7 +2,7 @@
 
 namespace ToDones.Application.Abstractions
 {
-    interface IUserService
+    public interface IUserService
     {
         bool AddUser(string userName, string email);
         User GetUser(int id);
